@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block sidebar %}
+<aside class="barra-lateral">
+    <div class="centrado-vertical">
+        <img src="static/img/avatar.png" alt="Profile picture placeholder" class="imagen-redonda mb-2">
+        <p class="texto-grande"><span>{{ nombre_usuario }}</span></p>
+        <p class="texto-pequeno"><span>{{ cargo_usuario }}</span></p>
+        <nav class="nav">
+            <ul class="lista-navegacion">
+                <li class="elemento-lista"><a href="/dashboard" class="enlace-navegacion">Dashboard</a></li>
+                <li class="elemento-lista"><a href="/reporte-horarios" class="enlace-navegacion">Reporte de ingreso</a></li>
+                <li class="elemento-lista"><a href="/registro-horarios" class="enlace-navegacion">Registro de ingreso</a></li>
+                <li class="elemento-lista"><a href="/registro-horas-extras" class="enlace-navegacion">Reporte de horas extra</a></li>
+                <li class="elemento-lista"><a href="/usuarios" class="enlace-navegacion">Reporte de usuarios</a></li>
+                <li class="elemento-lista"><a href="/registro-usuarios" class="enlace-navegacion">Registro de usuarios</a></li>
+                <li class="elemento-lista"><a href="/labores" class="enlace-navegacion">Labores</a></li>
+                <li class="elemento-lista"><a href="/filtros" class="enlace-navegacion">Historial de labores</a></li>
+                <li class="elemento-lista"><a href="/cambio_contraseña" class="enlace-navegacion">Cambio de contraseña</a></li>
+                <li class="elemento-lista"><a href="/actualizarimg" class="enlace-navegacion">Actualizar Imagenes</a></li>
+            </ul>
+        </nav>
+    </div>
+</aside>
+{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Horarios</title>
+    <link rel="stylesheet" href="/static/css/horarios.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h2>Registro de Horarios</h2>
+            <form id="horario-form">
+                <label for="cedula">Cédula:</label>
+                <input type="text" id="cedula" name="cedula" value="{{ cedula_usuario }}" readonly><br><br>
+                <label for="reporte">Tipo de reporte:</label><br>
+                <select id="reporte" name="reporte">
+                    <option value="entrada">Entrada</option>
+                    <option value="salida Almuerzo">Salida para Almorzar</option>
+                    <option value="entrada Almuerzo">Entrada de Almorzar</option>
+                    <option value="salida">Salida</option>
+                </select><br><br>
+                <button type="button" onclick="enviarHorario()">Enviar Horario</button>
+            </form>
+        </div>
+
+        <div class="form-container">
+            <h2>Reportar Horas Extra</h2>
+            <form id="hora-extra-form">
+                <label for="cedula">Cédula:</label>
+                <input type="text" id="cedula-extra" name="cedula" value="{{ cedula_usuario }}" readonly><br><br>
+                <label for="cantidad">Cantidad de Horas:</label><br>
+                <select id="cantidad" name="cantidad">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                </select><br><br>
+                <label for="motivo">Motivo:</label><br>
+                <input type="text" id="motivo" name="motivo" required><br><br>
+                <button type="button" onclick="enviarHora()">Guardar</button>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        async function enviarHorario() {
+            const cedula = document.getElementById('cedula').value;
+            const reporte = document.getElementById('reporte').value;
+            
+            try {
+                const response = await fetch('/Horario', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ cedula, reporte })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Hubo un error al enviar el horario.');
+                }
+
+                
+                alert("Se ha reportado exitosamente su "+ reporte);
+            } catch (error) {
+                console.error(error);
+                alert('Error: ' + error.message);
+            }
+        }
+        async function enviarHora() {
+            const cedula = document.getElementById('cedula-extra').value;
+            const reporte = "Hora Extra"
+            const cantidad = document.getElementById('cantidad').value;
+            const motivo = document.getElementById('motivo').value;
+            
+            try {
+                const response = await fetch('/Hora_extra', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ cedula, reporte,cantidad,motivo })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Hubo un error al registrar su hora extra.');
+                }
+
+                const data = await response.json();
+                alert(data.message);
+            } catch (error) {
+                console.error(error);
+                alert('Error: ' + error.message);
+            }
+        }
+        
+
+        
+    </script>
+</body>
+</html>
+{% endblock %}

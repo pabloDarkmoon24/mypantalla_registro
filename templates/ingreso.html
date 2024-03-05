@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingreso Plataforma My Pantalla</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wdth,wght@102.8,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/ingreso.css">
+
+</head>
+<body>
+    <div class="container">
+        <h2><center>Ingreso a Plataforma</center></h2>
+        <form id="loginForm" action="/user/" method="GET" onsubmit="submitForm(event)">
+            <label for="username">Cédula:</label>
+            <input type="text" id="username" name="id" placeholder="Digite su cédula (Sin puntos y sin espacios)" required><br>
+            <label for="password">Contraseña:</label>
+            <input type="password" id="password" name="password" placeholder="Digite su contraseña" required><br>
+            <input type="hidden" id="datetime" name="datetime"><!-- Campo oculto para la fecha y hora -->
+            <input type="submit"  value="INGRESAR">
+        </form>
+    </div>
+    <script>
+        async function submitForm(event) {
+            event.preventDefault(); // Evita que el formulario se envíe de forma tradicional
+            
+            const form = document.getElementById('loginForm');
+            const formData = new FormData(form);
+            const id = formData.get('id');
+            const password = formData.get('password');
+            const dateTime = new Date().toISOString(); // Formato de fecha ISO 8601
+            
+            formData.set('datetime', dateTime); // Agregar la fecha y hora al formulario
+            
+            try {
+                const response = await fetch(`/user/?id=${id}&password=${password}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Si el ingreso es exitoso, redirige al dashboard
+                    window.location.href = "/redireccionar?destino=dashboard"
+                } else {
+                    alert("Usuario o contraseña incorrecta");
+                }
+    
+                console.log(data);
+            } catch (error) {
+                console.error('Error:', error);
+                alert("Error de ingreso");
+            }
+        }
+        async function enviarIDUsuario(id) {
+            try {
+                const response = await fetch('/usuario_activo/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: id })
+                });
+                const data = await response.json();
+                console.log(data); // Puedes hacer algo con la respuesta si es necesario
+            } catch (error) {
+                console.error('Error al enviar el ID del usuario:', error);
+            }
+        }
+
+        
+    </script>
+      
+</body>
+</html>
+

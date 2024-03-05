@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block sidebar %}
+<aside class="barra-lateral">
+    <div class="centrado-vertical">
+        <img src="static/img/avatar.png" alt="Profile picture placeholder" class="imagen-redonda mb-2">
+        <p class="texto-grande"><span>{{ nombre_usuario }}</span></p>
+        <p class="texto-pequeno"><span>{{ cargo_usuario }}</span></p>
+        <nav class="nav">
+            <ul class="lista-navegacion">
+                <li class="elemento-lista"><a href="/dashboard" class="enlace-navegacion">Dashboard</a></li>
+                <li class="elemento-lista"><a href="/reporte-horarios" class="enlace-navegacion">Reporte de ingreso</a></li>
+                <li class="elemento-lista"><a href="/registro-horarios" class="enlace-navegacion">Registro de ingreso</a></li>
+                <li class="elemento-lista"><a href="/registro-horas-extras" class="enlace-navegacion">Reporte de horas extra</a></li>
+                <li class="elemento-lista"><a href="/usuarios" class="enlace-navegacion">Reporte de usuarios</a></li>
+                <li class="elemento-lista"><a href="/registro-usuarios" class="enlace-navegacion">Registro de usuarios</a></li>
+                <li class="elemento-lista"><a href="/labores" class="enlace-navegacion">Labores</a></li>
+                <li class="elemento-lista"><a href="/filtros" class="enlace-navegacion">Historial de labores</a></li>
+                <li class="elemento-lista"><a href="/cambio_contraseña" class="enlace-navegacion">Cambio de contraseña</a></li>
+                <li class="elemento-lista"><a href="/actualizarimg" class="enlace-navegacion">Actualizar Imagenes</a></li>
+            </ul>
+        </nav>
+    </div>
+</aside>
+{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subir Imágenes</title>
+    <link rel="stylesheet" href="/static/css/cargarimg.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Empleado del Mes</h1>
+        <form class="image-upload-form" id="image-upload-form-1">
+            <label class="file-input-label" for="image-input-1">Seleccionar Archivo</label>
+            <input type="file" class="file-input" id="image-input-1" accept="image/*">
+            <button class="upload-button" type="submit">Subir</button>
+        </form>
+    </div>
+    <div class="container">
+        <h1>Horario de Aseo</h1>
+        <form class="image-upload-form" id="image-upload-form-2">
+            <label class="file-input-label" for="image-input-2">Seleccionar Archivo</label>
+            <input type="file" class="file-input" id="image-input-2" accept="image/*">
+            <button class="upload-button" type="submit">Subir</button>
+        </form>
+    </div>
+    <div class="container">
+        <h1>Dashboard</h1>
+        <form class="image-upload-form" id="image-upload-form-3">
+            <label class="file-input-label" for="image-input-3">Seleccionar Archivo</label>
+            <input type="file" class="file-input" id="image-input-3" accept="image/*">
+            <button class="upload-button" type="submit">Subir</button>
+        </form>
+    </div>
+
+    <script>
+        // Función para manejar el evento change de los input de tipo file
+        function handleImageInputChange(inputId) {
+            document.getElementById(inputId).addEventListener("change", function() {
+                document.querySelector(`#${inputId} + .upload-button`).style.display = "block";
+            });
+        }
+
+        // Manejar eventos para cada formulario de carga de imágenes
+        document.getElementById("image-upload-form-1").addEventListener("submit", function(event) {
+            handleFormSubmit(event, "/upload-empleado");
+        });
+        document.getElementById("image-upload-form-2").addEventListener("submit", function(event) {
+            handleFormSubmit(event, "/upload-aseo");
+        });
+        document.getElementById("image-upload-form-3").addEventListener("submit", function(event) {
+            handleFormSubmit(event, "/upload-dashboard");
+        });
+
+        function handleFormSubmit(event, endpoint) {
+            event.preventDefault();
+            const formData = new FormData();
+            const fileInput = event.target.querySelector(".file-input");
+            formData.append("image", fileInput.files[0]);
+
+            fetch(endpoint, {
+                method: "POST",
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Revisa la imagen que intentas cargar");
+                }
+                return response.text();
+            })
+            .then(data => {
+                alert("Su imagen se ha cargado exitosamente");
+                window.location.reload();
+                // Aquí podrías recargar la lista de imágenes en el dashboard si es necesario
+            })
+            .catch(error => {
+                console.error("Error uploading image:", error);
+                alert("Error uploading image");
+            });
+        }
+
+        // Manejar eventos para cada input de tipo file
+        handleImageInputChange("image-input-1");
+        handleImageInputChange("image-input-2");
+        handleImageInputChange("image-input-3");
+    </script>
+</body>
+</html>
+
+{% endblock %}

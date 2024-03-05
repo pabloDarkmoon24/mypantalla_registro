@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block sidebar %}
+<aside class="barra-lateral">
+    <div class="centrado-vertical">
+        <img src="static/img/avatar.png" alt="Profile picture placeholder" class="imagen-redonda mb-2">
+        <p class="texto-grande"><span>{{ nombre_usuario }}</span></p>
+        <p class="texto-pequeno"><span>{{ cargo_usuario }}</span></p>
+        <nav class="nav">
+            <ul class="lista-navegacion">
+                <li class="elemento-lista"><a href="/dashboard" class="enlace-navegacion">Dashboard</a></li>
+                <li class="elemento-lista"><a href="/reporte-horarios" class="enlace-navegacion">Reporte de ingreso</a></li>
+                <li class="elemento-lista"><a href="/registro-horarios" class="enlace-navegacion">Registro de ingreso</a></li>
+                <li class="elemento-lista"><a href="/registro-horas-extras" class="enlace-navegacion">Reporte de horas extra</a></li>
+                <li class="elemento-lista"><a href="/usuarios" class="enlace-navegacion">Reporte de usuarios</a></li>
+                <li class="elemento-lista"><a href="/registro-usuarios" class="enlace-navegacion">Registro de usuarios</a></li>
+                <li class="elemento-lista"><a href="/labores" class="enlace-navegacion">Labores</a></li>
+                <li class="elemento-lista"><a href="/filtros" class="enlace-navegacion">Historial de labores</a></li>
+                <li class="elemento-lista"><a href="/cambio_contraseña" class="enlace-navegacion">Cambio de contraseña</a></li>
+                <li class="elemento-lista"><a href="/actualizarimg" class="enlace-navegacion">Actualizar Imagenes</a></li>
+            </ul>
+        </nav>
+    </div>
+</aside>
+{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados de la base de datos</title>
+    <link rel="stylesheet" href="/static/css/filtros.css">
+
+</head>
+<body>
+<div class="container">
+    <h2>Seleccionar labor</h2>
+    <form id="cambiarLaborForm">
+        <label for="labor">Seleccione una labor:</label>
+        <select id="labor_select" name="labor_select">
+            <option value="labor1_respaldo">Labor 1</option>
+            <option value="labor2_respaldo">Labor 2</option>
+            <option value="labor3_respaldo">Labor 3</option>
+            <option value="labor4_respaldo">Labor 4</option>
+            <option value="labor5_respaldo">Labor 5</option>
+            <option value="labor6_respaldo">Labor 6</option>
+            <option value="labor7_respaldo">Labor 7</option>
+            <option value="labor8_respaldo">Labor 8</option>
+            <option value="labor9_respaldo">Labor 9</option>
+            <option value="labor10_respaldo">Labor 10</option>
+        </select>
+        <button type="submit">Cambiar Labor</button>
+    </form>
+
+    <h2>Filtrar por Fecha</h2>
+    <form action="/filtrar_por_fecha/" method="get">
+        <label for="fecha">Fecha:</label>
+        <input type="date" id="fecha" name="fecha" required>
+        <button type="submit">Filtrar</button>
+    </form>
+    
+    <div id="mensajeCambiarLabor"></div>
+
+    <h2>Tareas existentes:</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Descripción</th>
+                <th>Fecha</th>
+                <th>Completado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tarea in datos %}
+            <tr>
+                <td>{{ tarea.id }}</td>
+                <td>{{ tarea.titulo }}</td>
+                <td>{{ tarea.descripcion }}</td>
+                <td>{{ tarea.fecha }}</td>
+                <td>{{ tarea.completado }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+    
+<script>
+    // Función para cargar las tareas
+    function cargarTareas() {
+        fetch('/todos')
+        .then(response => response.json())
+        .then(data => {
+            var tableBody = document.getElementById('cuerpoTabla');
+            tableBody.innerHTML = '';
+            data.forEach(tarea => {
+                var newRow = tableBody.insertRow();
+                newRow.innerHTML = `<td>${tarea.id}</td><td>${tarea.titulo}</td><td>${tarea.descripcion}</td><td>${tarea.fecha}</td><td>${tarea.completado}</td>`;
+            });
+        })
+        .catch(error => {
+            console.error('Error al obtener tareas:', error);
+        });
+    }
+
+    // Función para obtener y guardar el valor seleccionado en el almacenamiento local
+    function guardarLaborSeleccionado() {
+        var laborSeleccionado = document.getElementById('labor_select').value;
+        localStorage.setItem('laborSeleccionado', laborSeleccionado);
+    }
+
+    // Función para cargar el labor seleccionado almacenado en el almacenamiento local
+    function cargarLaborSeleccionado() {
+        var laborGuardado = localStorage.getItem('laborSeleccionado');
+        if (laborGuardado) {
+            document.getElementById('labor_select').value = laborGuardado;
+        }
+    }
+
+    // Evento que se dispara cuando se envía el formulario para cambiar de labor
+    document.getElementById("cambiarLaborForm").addEventListener("submit", function(event) {
+        event.preventDefault(); // Evitar el comportamiento predeterminado del formulario
+        guardarLaborSeleccionado(); // Guardar el labor seleccionado
+        var formData = new FormData(this);
+        fetch('/cambiar_labor/', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("mensajeCambiarLabor").innerText = data.mensaje;
+            alert('Dale aceptar para que se actualice al información');
+            window.location.reload();
+            cargarTareas(); // Cargar las tareas nuevamente después de cambiar la labor
+        })
+        .catch(error => {
+            console.error('Error al enviar la solicitud:', error);
+        });
+    });
+
+    // Cargar el labor seleccionado cuando se carga la página
+    cargarLaborSeleccionado();
+    cargarTareas(); // Cargar las tareas al cargar la página
+</script>
+</body>
+</html>
+
+
+{% endblock %}
+
+

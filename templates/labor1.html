@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block sidebar %}
+<aside class="barra-lateral">
+    <div class="centrado-vertical">
+        <img src="static/img/avatar.png" alt="Profile picture placeholder" class="imagen-redonda mb-2">
+        <p class="texto-grande"><span>{{ nombre_usuario }}</span></p>
+        <p class="texto-pequeno"><span>{{ cargo_usuario }}</span></p>
+        <nav class="nav">
+            <ul class="lista-navegacion">
+                <li class="elemento-lista"><a href="/dashboard" class="enlace-navegacion">Dashboard</a></li>
+                <li class="elemento-lista"><a href="/registro-horarios-usuarios" class="enlace-navegacion">Registro de ingreso</a></li>
+                <li class="elemento-lista"><a href="/labores_usuarios" class="enlace-navegacion">Labores</a></li>
+                <li class="elemento-lista"><a href="/mensajes" class="enlace-navegacion">Entregas</a></li>
+                <li class="elemento-lista"><a href="/cambio_contraseña-usuarios" class="enlace-navegacion">Cambio de contraseña</a></li>
+            </ul>
+        </nav>
+    </div>
+</aside>
+{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Tareas</title>
+    <link rel="stylesheet" href="/static/css/labor1.css">
+
+</head>
+<body>
+<div class="container">
+    <h1>Lista de Tareas</h1>
+
+    <table id="tareas">
+        <thead>
+            <tr>
+                <th colspan="5">Tareas Pendientes</th>
+            </tr>
+            <tr>
+                <th>Título</th>
+                <th>Descripción</th>
+                <th>Fecha</th>
+                <th>Completado</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="tareas-pendientes"></tbody>
+        
+        <!-- Separación entre secciones -->
+        <tbody>
+            <tr>
+                <td colspan="5">&nbsp;</td>
+            </tr>
+        </tbody>
+        
+        <thead>
+            <tr>
+                <th colspan="5">Tareas Completadas</th>
+            </tr>
+            <tr>
+                <th>Título</th>
+                <th>Descripción</th>
+                <th>Fecha</th>
+                <th>Completado</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="tareas-realizadas"></tbody>
+    </table>
+</div>
+    <script>
+        async function cargarTareas() {
+            try {
+                const responsePendientes = await fetch('/tareas_pendientes/');
+                const tareasPendientes = await responsePendientes.json();
+
+                const responseRealizadas = await fetch('/tareas_realizadas/');
+                const tareasRealizadas = await responseRealizadas.json();
+
+                mostrarTareas(tareasPendientes, 'tareas-pendientes');
+                mostrarTareas(tareasRealizadas, 'tareas-realizadas');
+            } catch (error) {
+                console.error('Error al cargar las tareas:', error);
+            }
+        }
+
+        function mostrarTareas(tareas, contenedorId) {
+            const contenedor = document.getElementById(contenedorId);
+            contenedor.innerHTML = ''; // Limpiar contenedor
+
+            tareas.forEach(tarea => {
+                const fila = document.createElement('tr');
+                fila.innerHTML = `
+                    <td>${tarea.titulo}</td>
+                    <td>${tarea.descripcion}</td>
+                    <td>${tarea.fecha}</td>
+                    <td>${tarea.completado ? 'Sí' : 'No'}</td>
+                    <td><button onclick="completarTarea(${tarea.id})">Completar</button></td>
+                `;
+                contenedor.appendChild(fila);
+            });
+        }
+
+        async function completarTarea(tareaId) {
+            try {
+                const response = await fetch(`/completar_tarea/${tareaId}/`, {
+                    method: 'PUT'
+                });
+                if (response.ok) {
+                    cargarTareas(); // Recargar las tareas después de completar una
+                } else {
+                    console.error('Error al completar la tarea:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error al completar la tarea:', error);
+            }
+        }
+
+        cargarTareas();
+    </script>
+</body>
+</html>
+
+{% endblock %}

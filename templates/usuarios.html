@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block sidebar %}
+<aside class="barra-lateral">
+    <div class="centrado-vertical">
+        <img src="static/img/avatar.png" alt="Profile picture placeholder" class="imagen-redonda mb-2">
+        <p class="texto-grande"><span>{{ nombre_usuario }}</span></p>
+        <p class="texto-pequeno"><span>{{ cargo_usuario }}</span></p>
+        <nav class="nav">
+            <ul class="lista-navegacion">
+                <li class="elemento-lista"><a href="/dashboard" class="enlace-navegacion">Dashboard</a></li>
+                <li class="elemento-lista"><a href="/reporte-horarios" class="enlace-navegacion">Reporte de ingreso</a></li>
+                <li class="elemento-lista"><a href="/registro-horarios" class="enlace-navegacion">Registro de ingreso</a></li>
+                <li class="elemento-lista"><a href="/registro-horas-extras" class="enlace-navegacion">Reporte de horas extra</a></li>
+                <li class="elemento-lista"><a href="/usuarios" class="enlace-navegacion">Reporte de usuarios</a></li>
+                <li class="elemento-lista"><a href="/registro-usuarios" class="enlace-navegacion">Registro de usuarios</a></li>
+                <li class="elemento-lista"><a href="/labores" class="enlace-navegacion">Labores</a></li>
+                <li class="elemento-lista"><a href="/filtros" class="enlace-navegacion">Historial de labores</a></li>
+                <li class="elemento-lista"><a href="/cambio_contraseña" class="enlace-navegacion">Cambio de contraseña</a></li>
+                <li class="elemento-lista"><a href="/actualizarimg" class="enlace-navegacion">Actualizar Imagenes</a></li>
+            </ul>
+        </nav>
+    </div>
+</aside>
+{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuarios Registardos
+    </title>
+    <link rel="stylesheet" href="/static/css/usuarios.css">
+</head>
+<body>
+    <body>
+        
+        <h1>Listado de Usuarios</h1>
+        <table>
+            
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Dirección</th>
+                    <th>Número</th>
+                    <th>Nombre Contacto de Emergencia</th>
+                    <th>Número de Emergencia</th>
+                    <th>Labor</th>
+                </tr>
+            </thead>
+            <tbody id="users-table">
+                <!-- Aquí se llenarán los datos de los usuarios -->
+            </tbody>
+        </table>
+        <h1>Eliminar Usuario</h1>
+        <form id="delete-form">
+            <label for="id-input">ID del usuario a eliminar:</label>
+            <input type="text" id="id-input" name="id" required>
+            <button type="submit">Eliminar</button>
+        </form>
+    
+        <div id="confirmation-container" style="display: none;">
+            <p>¿Estás seguro de que deseas eliminar este usuario?</p>
+            <button id="confirm-delete-btn">Sí, eliminar</button>
+            <button id="cancel-delete-btn">Cancelar</button>
+        </div>
+    
+        <script>
+            async function fetchUsers() {
+                try {
+                    const response = await fetch("/usuarios/");
+                    const users = await response.json();
+                    const usersTable = document.getElementById("users-table");
+    
+                    users.forEach(user => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${user.id}</td>
+                            <td>${user.nombre}</td>
+                            <td>${user.correo}</td>
+                            <td>${user.direccion}</td>
+                            <td>${user.numero}</td>
+                            <td>${user.nombre_emergencia}</td>
+                            <td>${user.numero_emergencia}</td>
+                            <td>${user.cargo}</td>
+                        `;
+                        usersTable.appendChild(row);
+                    });
+                } catch (error) {
+                    console.error("Error al obtener usuarios:", error);
+                }
+            }
+    
+            fetchUsers();
+        </script>
+
+    <script>
+        document.getElementById("delete-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            document.getElementById("confirmation-container").style.display = "block";
+        });
+
+        document.getElementById("confirm-delete-btn").addEventListener("click", async function() {
+            const id = document.getElementById("id-input").value;
+            const response = await fetch(`/user/${id}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                alert("Usuario eliminado exitosamente");
+                location.reload(); // Recargar la página para mostrar los cambios actualizados
+            } else {
+                const data = await response.json();
+                alert(`Error al eliminar usuario: ${data.message}`);
+            }
+        });
+
+        document.getElementById("cancel-delete-btn").addEventListener("click", function() {
+            document.getElementById("confirmation-container").style.display = "none";
+        });
+    </script>
+</body>
+</html>
+{% endblock %}

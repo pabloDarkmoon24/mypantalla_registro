@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block sidebar %}
+<aside class="barra-lateral">
+    <div class="centrado-vertical">
+        <img src="static/img/avatar.png" alt="Profile picture placeholder" class="imagen-redonda mb-2">
+        <p class="texto-grande"><span>{{ nombre_usuario }}</span></p>
+        <p class="texto-pequeno"><span>{{ cargo_usuario }}</span></p>
+        <nav class="nav">
+            <ul class="lista-navegacion">
+                <li class="elemento-lista"><a href="/dashboard" class="enlace-navegacion">Dashboard</a></li>
+                <li class="elemento-lista"><a href="/reporte-horarios" class="enlace-navegacion">Reporte de ingreso</a></li>
+                <li class="elemento-lista"><a href="/registro-horarios" class="enlace-navegacion">Registro de ingreso</a></li>
+                <li class="elemento-lista"><a href="/registro-horas-extras" class="enlace-navegacion">Reporte de horas extra</a></li>
+                <li class="elemento-lista"><a href="/usuarios" class="enlace-navegacion">Reporte de usuarios</a></li>
+                <li class="elemento-lista"><a href="/registro-usuarios" class="enlace-navegacion">Registro de usuarios</a></li>
+                <li class="elemento-lista"><a href="/labores" class="enlace-navegacion">Labores</a></li>
+                <li class="elemento-lista"><a href="/filtros" class="enlace-navegacion">Historial de labores</a></li>
+                <li class="elemento-lista"><a href="/cambio_contraseña" class="enlace-navegacion">Cambio de contraseña</a></li>
+                <li class="elemento-lista"><a href="/actualizarimg" class="enlace-navegacion">Actualizar Imagenes</a></li>
+            </ul>
+        </nav>
+    </div>
+</aside>
+{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Horas extas por Rango de Fechas</title>
+    <link rel="stylesheet" href="/static/css/reportes_horaextra.css">
+</head>
+<body>
+    <h1>Consulta de Horas extas por Rango de Fechas</h1>
+    <form id="hora-form">
+        <label for="fecha-inicio">Fecha de inicio (YYYY-MM-DD):</label>
+        <input type="text" id="fecha-inicio" name="fecha_inicio" required pattern="\d{4}-\d{2}-\d{2}">
+        <label for="fecha-fin">Fecha de fin (YYYY-MM-DD):</label>
+        <input type="text" id="fecha-fin" name="fecha_fin" required pattern="\d{4}-\d{2}-\d{2}">
+        <button type="submit">Consultar</button>
+    </form>
+    <div id="result-container"></div>
+    <script>
+        document.getElementById("hora-form").addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const fechaInicio = formData.get("fecha_inicio");
+            const fechaFin = formData.get("fecha_fin");
+            const response = await fetch("/Hora/?fecha_inicio=" + fechaInicio + "&fecha_fin=" + fechaFin);
+            const data = await response.json();
+            const resultContainer = document.getElementById("result-container");
+            if (response.ok) {
+                resultContainer.innerHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cédula</th>
+                                <th>Nombre</th>
+                                <th>Reporte</th>
+                                <th>Fecha</th>
+                                <th>Cantidad</th>
+                                <th>Motivo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.map(hora => `
+                                <tr>
+                                    <td>${hora.id}</td>
+                                    <td>${hora.cedula}</td>
+                                    <td>${hora.nombre}</td>
+                                    <td>${hora.reporte}</td>
+                                    <td>${hora.fecha}</td>
+                                    <td>${hora.cantidad}</td>
+                                    <td>${hora.motivo}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } else {
+                resultContainer.innerHTML = `<p>Error: ${data.detail}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
+{% endblock %}

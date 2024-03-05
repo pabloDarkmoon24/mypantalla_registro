@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block sidebar %}
+<aside class="barra-lateral">
+    <div class="centrado-vertical">
+        <img src="static/img/avatar.png" alt="Profile picture placeholder" class="imagen-redonda mb-2">
+        <p class="texto-grande"><span>{{ nombre_usuario }}</span></p>
+        <p class="texto-pequeno"><span>{{ cargo_usuario }}</span></p>
+        <nav class="nav">
+            <ul class="lista-navegacion">
+                <li class="elemento-lista"><a href="/dashboard" class="enlace-navegacion">Dashboard</a></li>
+                <li class="elemento-lista"><a href="/reporte-horarios" class="enlace-navegacion">Reporte de ingreso</a></li>
+                <li class="elemento-lista"><a href="/registro-horarios" class="enlace-navegacion">Registro de ingreso</a></li>
+                <li class="elemento-lista"><a href="/registro-horas-extras" class="enlace-navegacion">Reporte de horas extra</a></li>
+                <li class="elemento-lista"><a href="/usuarios" class="enlace-navegacion">Reporte de usuarios</a></li>
+                <li class="elemento-lista"><a href="/registro-usuarios" class="enlace-navegacion">Registro de usuarios</a></li>
+                <li class="elemento-lista"><a href="/labores" class="enlace-navegacion">Labores</a></li>
+                <li class="elemento-lista"><a href="/filtros" class="enlace-navegacion">Historial de labores</a></li>
+                <li class="elemento-lista"><a href="/cambio_contraseña" class="enlace-navegacion">Cambio de contraseña</a></li>
+                <li class="elemento-lista"><a href="/actualizarimg" class="enlace-navegacion">Actualizar Imagenes</a></li>
+            </ul>
+        </nav>
+    </div>
+</aside>
+{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Usuarios</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/registro.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Registro de Usuarios</h2>
+        <form id="registroForm">
+            <label for="id">Cédula:</label>
+            <input type="text" id="id" name="id" placeholder="Ingrese su cédula" required><br>
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" placeholder="Ingrese su nombre" required><br>
+            <label for="correo">Correo:</label>
+            <input type="text" id="correo" name="correo" placeholder="Ingrese su correo"><br>
+            <label for="direccion">Dirección:</label>
+            <input type="text" id="direccion" name="direccion" placeholder="Ingrese su dirección"><br>
+            <label for="numero">Número de Teléfono:</label>
+            <input type="text" id="numero" name="numero" placeholder="Ingrese su número de teléfono" required><br>
+            <label for="nombre_emergencia">Nombre del contacto de emergencia:</label>
+            <input type="text" id="nombre_emergencia" name="nombre_emergencia" placeholder="Ingrese el nombre de su contacto de emergencia" required><br>
+            <label for="numero_emergencia">Contacto de emergencia:</label>
+            <input type="text" id="numero_emergencia" name="numero_emergencia" placeholder="Ingrese su número de teléfono" required><br>
+            <label for="cargo">Seleccione un cargo:</label>
+            <select id="cargo" name="cargo">
+                <option value="admin">Admin</option>
+                <option value="labor1">Labor 1</option>
+                <option value="labor2">Labor 2</option>
+                <option value="labor3">Labor 3</option>
+                <option value="labor4">Labor 4</option>
+                <option value="labor5">Labor 5</option>
+                <option value="labor6">Labor 6</option>
+                <option value="labor7">Labor 7</option>
+                <option value="labor8">Labor 8</option>
+                <option value="labor9">Labor 9</option>
+                <option value="labor10">Labor 10</option>
+            </select><br>
+            <label for="password">Contraseña:</label>
+            <input type="password" id="password" name="password" placeholder="Ingrese una contraseña" required><br>
+            <label for="confirm_password">Confirmar Contraseña:</label>
+            <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirme su contraseña" required><br>
+            <input type="submit" value="Registrarse">
+        </form>
+    </div>
+
+    <script >
+        document.getElementById("registroForm").addEventListener("submit", function(event) {
+        event.preventDefault(); // Evita que el formulario se envíe automáticamente
+        
+        // Captura los valores del formulario
+        const formData = new FormData(event.target);
+        const password = formData.get("password");
+        const confirm_password = formData.get("confirm_password");
+
+        // Verifica si las contraseñas coinciden
+        if (password !== confirm_password) {
+            alert("Las contraseñas no coinciden. Por favor, inténtelo de nuevo.");
+            return; // Detiene el envío del formulario si las contraseñas no coinciden
+        }
+
+        // Si las contraseñas coinciden, envía los datos en formato JSON
+        const formObject = {};
+        formData.forEach((value, key) => {
+            formObject[key] = value;
+        });
+
+        fetch("/usuario", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(formObject)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Hubo un problema al enviar el formulario.");
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data);
+            // Puedes manejar la respuesta aquí, por ejemplo, mostrar un mensaje de éxito
+            alert("Registro exitoso");
+            event.target.reset();
+        })
+        .catch(error => {
+            console.error(error);
+            // Puedes manejar los errores aquí, por ejemplo, mostrar un mensaje de error
+            alert("El Usuario ya existe, Valida tus datos");
+        });
+    });
+
+        </script>
+</body>
+</html>
+{% endblock %}

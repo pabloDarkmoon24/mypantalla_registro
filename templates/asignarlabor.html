@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block sidebar %}
+<aside class="barra-lateral">
+    <div class="centrado-vertical">
+        <img src="static/img/avatar.png" alt="Profile picture placeholder" class="imagen-redonda mb-2">
+        <p class="texto-grande"><span>{{ nombre_usuario }}</span></p>
+        <p class="texto-pequeno"><span>{{ cargo_usuario }}</span></p>
+        <nav class="nav">
+            <ul class="lista-navegacion">
+                <li class="elemento-lista"><a href="/dashboard" class="enlace-navegacion">Dashboard</a></li>
+                <li class="elemento-lista"><a href="/reporte-horarios" class="enlace-navegacion">Reporte de ingreso</a></li>
+                <li class="elemento-lista"><a href="/registro-horarios" class="enlace-navegacion">Registro de ingreso</a></li>
+                <li class="elemento-lista"><a href="/registro-horas-extras" class="enlace-navegacion">Reporte de horas extra</a></li>
+                <li class="elemento-lista"><a href="/usuarios" class="enlace-navegacion">Reporte de usuarios</a></li>
+                <li class="elemento-lista"><a href="/registro-usuarios" class="enlace-navegacion">Registro de usuarios</a></li>
+                <li class="elemento-lista"><a href="/labores" class="enlace-navegacion">Labores</a></li>
+                <li class="elemento-lista"><a href="/filtros" class="enlace-navegacion">Historial de labores</a></li>
+                <li class="elemento-lista"><a href="/cambio_contraseña" class="enlace-navegacion">Cambio de contraseña</a></li>
+                <li class="elemento-lista"><a href="/actualizarimg" class="enlace-navegacion">Actualizar Imagenes</a></li>
+            </ul>
+        </nav> 
+    </div>
+</aside>
+{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados de la base de datos</title>
+    <link rel="stylesheet" href="/static/css/asignarlabor.css">
+
+</head>
+<body>
+<div class="container">
+    <h2>Seleccionar labor</h2>
+    <form id="cambiarLaborForm">
+        <label for="labor">Seleccione una labor:</label>
+        <select id="labor_select" name="labor_select">
+            <option value="labor1">Labor 1</option>
+            <option value="labor2">Labor 2</option>
+            <option value="labor3">Labor 3</option>
+            <option value="labor4">Labor 4</option>
+            <option value="labor5">Labor 5</option>
+            <option value="labor6">Labor 6</option>
+            <option value="labor7">Labor 7</option>
+            <option value="labor8">Labor 8</option>
+            <option value="labor9">Labor 9</option>
+            <option value="labor10">Labor 10</option>
+
+            <!-- Agrega aquí más opciones según necesites -->
+        </select>
+        <button type="submit">Cambiar Labor</button>
+    </form>
+</div>
+<div class="container">  
+    <div id="mensajeCambiarLabor"></div>
+    <div>
+        <h2>Cargar tareas</h2>
+        <button id="cargarTareasBtn"><center>Cargar Tareas</center></button>
+    </div>
+</div>
+<div class="container">  
+    <h2>Crear nuevas tareas</h2>
+    <form id="crearTareaForm">
+        <label for="titulo">Título:</label>
+        <input type="text" id="titulo" name="titulo"><br>
+        <label for="descripcion">Descripción:</label>
+        <input type="text" id="descripcion" name="descripcion"><br>
+        <label for="completado">Completado:</label>
+        <input type="checkbox" id="completado" name="completado"><br>
+        <button type="submit">Crear tarea</button>
+    </form>
+</div>
+<div class="container">  
+    <div id="mensaje"></div>
+    <h2>Tareas existentes:</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Descripción</th>
+                <th>Fecha</th>
+                <th>Completado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tarea in datos %}
+            <tr>
+                <td>{{ tarea.id }}</td>
+                <td>{{ tarea.titulo }}</td>
+                <td>{{ tarea.descripcion }}</td>
+                <td>{{ tarea.fecha }}</td>
+                <td>{{ tarea.completado }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="container">  
+    <h2>Eliminar Tarea</h2>
+    <form id="eliminarTareaForm">
+        <label for="tareaId">ID de Tarea:</label>
+        <input type="number" id="tareaId" name="tareaId" required><br>
+        <button type="submit-delete">Eliminar Tarea</button>
+    </form>
+    
+    <div id="mensajeEliminarTarea"></div>
+</div>
+
+    
+    <script>
+        function cargarTareas() {
+            fetch('/todos')
+            .then(response => response.json())
+            .then(data => {
+                var tableBody = document.getElementById('tareasTable');
+                tableBody.innerHTML = '';
+                data.forEach(tarea => {
+                    var row = tableBody.insertRow();
+                    row.insertCell().textContent = tarea.id;
+                    row.insertCell().textContent = tarea.titulo;
+                    row.insertCell().textContent = tarea.descripcion;
+                    row.insertCell().textContent = tarea.fecha;
+                    row.insertCell().textContent = tarea.completado;
+                });
+            })
+            .catch(error => {
+                console.error('Error al obtener tareas:', error);
+            });
+        }
+
+        // Al cargar la página
+        window.onload = function() {
+            cargarTareas(); // Cargar las tareas al inicio
+
+            var storedLabor = localStorage.getItem("selectedLabor");
+            if (storedLabor) {
+                var laborSelect = document.getElementById("labor_select");
+                laborSelect.value = storedLabor;
+            }
+        };
+
+        document.getElementById("cambiarLaborForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Evitar el comportamiento predeterminado del formulario
+
+            var laborSelect = document.getElementById("labor_select");
+            var selectedLabor = laborSelect.options[laborSelect.selectedIndex].value;
+            localStorage.setItem("selectedLabor", selectedLabor);
+
+            var formData = new FormData(this);
+            fetch('/cambiar_labor2/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("mensajeCambiarLabor").innerText = data.mensaje;
+                alert('Se cambió el labor actual');
+                window.location.reload(); // Recargar la página después de mostrar la alerta
+            })
+            .catch(error => {
+                console.error('Error al enviar la solicitud:', error);
+            });
+        });
+
+        document.getElementById("crearTareaForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Evitar el comportamiento por defecto del formulario
+
+            var formData = new FormData(this);
+            fetch('/crear_tarea2/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Se envió la Tarea de forma exitosa');
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Error al enviar la solicitud:', error);
+            });
+        });
+
+        document.getElementById("eliminarTareaForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Evitar el comportamiento por defecto del formulario
+
+            var tareaId = document.getElementById('tareaId').value;
+            fetch(`/eliminar_tarea/${tareaId}/`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("mensajeEliminarTarea").innerText = data.mensaje;
+                alert('Se eliminó la tarea de forma exitosa');
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Error al eliminar la tarea:', error);
+            });
+        });
+
+        document.getElementById("cargarTareasBtn").addEventListener("click", function() {
+            fetch('/actualizar_tareas/', {
+                method: 'PUT'
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.mensaje);
+                // Recargar la tabla de tareas
+                window.location.reload();
+                cargarTareas();
+            })
+            .catch(error => {
+                console.error('Error al cargar tareas:', error);
+            });
+        });
+
+
+    </script>
+</body>
+</html>
+
+{% endblock %}
+
+

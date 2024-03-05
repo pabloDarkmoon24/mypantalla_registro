@@ -1,0 +1,46 @@
+
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block sidebar %}
+<aside class="barra-lateral">
+    <div class="centrado-vertical">
+        <img src="static/img/avatar.png" alt="Profile picture placeholder" class="imagen-redonda mb-2">
+        <p class="texto-grande"><span>{{ nombre_usuario }}</span></p>
+        <p class="texto-pequeno"><span>{{ cargo_usuario }}</span></p>
+        <nav class="nav">
+            <ul class="lista-navegacion">
+                <li class="elemento-lista"><a href="/dashboard" class="enlace-navegacion">Dashboard</a></li>
+                <li class="elemento-lista"><a href="/registro-horarios-usuarios" class="enlace-navegacion">Registro de ingreso</a></li>
+                <li class="elemento-lista"><a href="/labores_usuarios" class="enlace-navegacion">Labores</a></li>
+                <li class="elemento-lista"><a href="/mensajes" class="enlace-navegacion">Entregas</a></li>
+                <li class="elemento-lista"><a href="/cambio_contraseña-usuarios" class="enlace-navegacion">Cambio de contraseña</a></li>
+            </ul>
+        </nav>
+    </div>
+</aside>
+{% endblock %}
+
+{% block content %}
+<main class="contenido-principal">
+    <div class="tarjeta">
+        <img src="static/img/dashboard.png" alt="Employee of the month placeholder" class="imagen-empleado">
+    </div>
+
+    <div class="grid-empleados">
+        <div class="tarjeta-empleado">
+            <h3 class="titulo-empleado">EMPLEADO DEL MES</h3>
+            <div>
+                <img src="static/img/Empleado-del-mes.png" alt="Employee of the month placeholder" class="imagen-empleado">
+            </div>
+        </div>
+        <div class="tarjeta-empleado">
+            <h3 class="titulo-empleado">ASEO SEMANAL</h3>
+            <div>
+                <img src="static/img/lista-aseo.png" alt="Employee of the month placeholder" class="imagen-empleado">
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

@@ -1,0 +1,128 @@
+.fondo-principal { background-color: #E8E8E8; 
+    font-family: 'Fredoka', sans-serif; 
+    margin: 0; 
+}
+
+.encabezado { 
+    background-color: #145374;
+    padding: 18px;
+    color: #E8E8E8; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    height: 80px;
+    border-radius: 0%;
+}
+
+.titulo-principal { 
+    font-size: 40px; 
+}
+
+.boton-salir {
+    font-weight: bold;
+    background-color: #E8E8E8;
+    color: black;
+    height: 50px;
+    width: 100px; /* Ancho del botón */
+    border-radius: 20px;
+    cursor: pointer; 
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.boton-salir:hover {
+    background-color: red; /* Cambiar color de fondo al pasar el ratón */
+    color: white; /* Cambiar color del texto al pasar el ratón */
+}
+
+.contenedor-flex { 
+    display: flex; 
+}
+
+.barra-lateral { 
+    width: 20%; 
+    background-color: #145374; 
+    padding: 16px; 
+    color: white;
+    height:auto;
+    border-radius: 0%;  
+}
+.centrado-vertical { 
+    display: flex; 
+    flex-direction: column; 
+    align-items:center; 
+}
+
+.imagen-redonda { 
+    border-radius: 50%;  
+
+}
+
+
+.texto-grande { 
+    font-size: 18px; 
+    margin-bottom: 0px; 
+}
+
+.texto-pequeno { 
+    margin-bottom: 8px;
+    font-style: italic; 
+}
+
+.lista-navegacion { 
+    list-style: none; 
+    padding: 0px;
+    align-items:center;
+}
+
+.elemento-lista { 
+    margin-bottom: 8px; 
+    background-color: white; 
+    border-radius: 40px;
+    height: 30px;
+    width: 105%; 
+}
+
+.enlace-navegacion { 
+    color: #00334E;
+    font-size: 18px;
+    margin-left: 15px;
+    text-decoration: none; &:hover { color: green}}
+
+
+.contenido-principal { 
+    width: 93%; 
+    padding: 5px; 
+}
+
+.tarjeta { 
+    background-color: white; 
+    padding: 24px; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+}
+
+.grid-empleados { 
+    display: grid; 
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 16px; 
+    margin-top: 5px; 
+}
+
+.tarjeta-empleado { 
+    background-color: #00334E; 
+    padding: 24px; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+    color: white; 
+}
+
+.titulo-empleado { 
+    font-size: 20px; 
+    margin-bottom: 12px; 
+}
+
+.imagen-empleado {
+    width: 100%; /* La imagen ocupará el 100% del ancho del contenedor */
+    height: auto; /* La altura se ajustará automáticamente para mantener la proporción original */
+    max-width: 100%; /* La imagen no superará el 100% del ancho del contenedor */
+}
