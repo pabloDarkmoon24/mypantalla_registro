@@ -191,51 +191,6 @@ def verificar_permiso_usuario():
                 conexion.close()
 
     return 0
-# validar permisos__________________________________________________________________________
-
-# Este endpoint imprime el valor de cedula_usuario_____________________________________________________________________________________________
-# @app.get("/get_cedula_usuario")
-# def get_cedula_usuario():
-#     global cedula_usuario
-#     try:
-#         conexion = get_mysql_connection()
-#         cursor = conexion.cursor()
-#         cursor.execute("SELECT cargo FROM datos_empresa WHERE id = %s", (cedula_usuario,))
-#         result = cursor.fetchone()
-#         if result:
-#             cargo = result[0]
-#             return cargo
-#         else:
-#             return HTTPException(status_code=404, detail="Cargo no encontrado")
-#     except Error as e:
-#         raise HTTPException(status_code=500, detail=str(e))
-#     finally:
-#         if conexion.is_connected():
-#             cursor.close()
-#             conexion.close()
-# Este endpoint imprime el valor de cedula_usuario_____________________________________________________________________________________________
-            
-
-
-# def verificar_cargo(cedula_usuario):
-#      cargo_usuario = None
-#      try:
-#          conexion = get_mysql_connection()
-#          cursor = conexion.cursor()
-#          cursor.execute("SELECT cargo FROM datos_empresa WHERE id = %s", (cedula_usuario,))
-#          result = cursor.fetchone()
-#          if result:
-#              cargo_usuario = result[0]
-#      except Error as e:
-#          raise HTTPException(status_code=500, detail=str(e))
-#      finally:
-#          if conexion.is_connected():
-#              cursor.close()
-#              conexion.close()
-#      return cargo_usuario
- 
-#______________________________________________________________________________________________________________________________
-
 def obtener_cargo_usuario(request: Request) -> str:
     cargo_usuario = None
     try:
